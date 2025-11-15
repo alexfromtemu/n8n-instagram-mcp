@@ -1,0 +1,32 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    networks:
+      - mcp-network
+
+  instagram_mcp:
+    build: ./instagram_dm_mcp
+    container_name: instagram_mcp
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MODE=${MODE:-http}  # Use 'http' for n8n, 'mcp' for AI assistants (defaults to http)
+    volumes:
+      - ./mcp_data:/app/data
+      - ./mcp_data/sessions:/app/sessions
+      - ./mcp_data/downloads:/app/downloads
+    networks:
+      - mcp-network
+    ports:
+      - "5001:5000"  # HTTP API accessible on port 5001 from host
+
+networks:
+  mcp-network:
+    driver: bridge

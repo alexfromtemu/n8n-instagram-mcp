@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  instagram-dm-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: instagram-dm-mcp
+    stdin_open: true
+    tty: true
+    environment:
+      - INSTAGRAM_USERNAME=${INSTAGRAM_USERNAME}
+      - INSTAGRAM_PASSWORD=${INSTAGRAM_PASSWORD}
+    volumes:
+      # Persist session files across container restarts
+      - ./sessions:/app/sessions
+      # Optional: mount downloads directory
+      - ./downloads:/app/downloads
+    # MCP uses stdio, so we don't expose ports
+    # The container will communicate via stdin/stdout
+    restart: unless-stopped
+
